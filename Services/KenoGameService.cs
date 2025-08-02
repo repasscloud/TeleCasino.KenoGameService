@@ -10,6 +10,7 @@ namespace TeleCasino.KenoGameService.Services;
 public class KenoGameService : IKenoGameService
 {
     private readonly string _sharedDir;
+    private readonly string _htmlDir;
     private const int Width = 600;
     private const int Height = 600;
     private static readonly Random Rand = new();
@@ -23,6 +24,7 @@ public class KenoGameService : IKenoGameService
     public KenoGameService(IConfiguration config)
     {
         _sharedDir = config["SharedDirectory"] ?? "/shared";
+        _htmlDir = config["HtmlDir"] ?? "/app/wwwroot";
     }
 
     public async Task<KenoResult> PlayGameAsync(int wager, List<int> numbers, int gameSessionId)
@@ -34,7 +36,7 @@ public class KenoGameService : IKenoGameService
             playerNumbers.Distinct().Count() != k ||
             playerNumbers.Any(n => n < 1 || n > 80))
         {
-            Console.WriteLine("Move this validation to the calling service, it should not be here!");
+            throw new ArgumentException("Invalid Keno numbers provided. Must be between 7–15 distinct numbers, all between 1 and 80.");
         }
 
         var kenoResultId = await Nanoid.GenerateAsync();
@@ -130,6 +132,10 @@ public class KenoGameService : IKenoGameService
                 svg.Dispose();
             }
         }
+
+        // move file to public dir
+        if (File.Exists(videoFile))
+            File.Move(videoFile, Path.Combine(_htmlDir, Path.GetFileName(videoFile)));
 
         // cleanup
         Directory.Delete(framesDir, true);
@@ -265,5 +271,4 @@ public class KenoGameService : IKenoGameService
                                 .Encode(SKEncodedImageFormat.Png, 90);
         File.WriteAllBytes(outPath, data.ToArray());
     }
-
 }
