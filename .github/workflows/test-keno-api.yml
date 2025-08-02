@@ -30,9 +30,9 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '[4,8,17,19,11,13,42,35]'
 
-      - name: Check generated video
+      - name: Show folder tree
         run: |
-          docker exec keno ls -lah /shared/Keno
+          docker exec keno tree /shared/Keno
 
       - name: Stop container
         if: always()

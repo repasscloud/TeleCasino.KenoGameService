@@ -16,6 +16,7 @@ WORKDIR /app
 
 RUN apt update && apt -y install --no-install-recommends \
     ffmpeg \
+    tree \
     libfontconfig1 \
     libfreetype6 \
     libpng16-16 \
