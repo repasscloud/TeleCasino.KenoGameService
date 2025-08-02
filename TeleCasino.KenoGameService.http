@@ -1,0 +1,6 @@
+@TeleCasino.KenoGameService_HostAddress = http://localhost:5147
+
+GET {{TeleCasino.KenoGameService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
