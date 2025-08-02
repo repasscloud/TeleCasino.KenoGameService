@@ -29,9 +29,10 @@ jobs:
             -H 'accept: text/plain' \
             -H 'Content-Type: application/json' \
             -d '[4,8,17,19,11,13,42,35]'
+
       - name: Check generated video
         run: |
-          docker exec telecasino_keno ls -lah /shared/Keno
+          docker exec keno ls -lah /shared/Keno
 
       - name: Stop container
         if: always()
