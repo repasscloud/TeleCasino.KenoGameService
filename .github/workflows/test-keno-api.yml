@@ -2,7 +2,7 @@ name: Build and Test KenoGameService
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ main, dev ]
 
 jobs:
   build-and-test:
