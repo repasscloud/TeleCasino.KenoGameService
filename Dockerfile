@@ -15,19 +15,23 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
 # Install ffmpeg and SkiaSharp dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt update && apt -y install --no-install-recommends \
+    ffmpeg \
     libfontconfig1 \
     libfreetype6 \
     libpng16-16 \
+    libjpeg62-turbo \
+    libgif7 \
+    libwebp7 \
     libharfbuzz0b \
+    libicu72 \
+    libgl1 \
     libfribidi0 \
     libxcb1 \
     libc6 \
     libx11-6 \
     libxext6 \
     libxrender1 \
-    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # copy published output
