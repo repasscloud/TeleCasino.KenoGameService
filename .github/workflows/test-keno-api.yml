@@ -1,0 +1,35 @@
+name: Build and Test KenoGameService
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t telecasino-keno .
+
+      - name: Run container in background
+        run: |
+          docker run -d --name keno -p 8080:8080 telecasino-keno
+          sleep 10  # wait for the API to start
+
+      - name: Test API endpoint
+        run: |
+          curl -v -X POST \
+            'http://localhost:8080/api/Keno/play?wager=1&gameSessionId=22' \
+            -H 'accept: text/plain' \
+            -H 'Content-Type: application/json' \
+            -d '[4,8,17,19,11,13,42,35]'
+
+      - name: Stop container
+        if: always()
+        run: docker stop keno
