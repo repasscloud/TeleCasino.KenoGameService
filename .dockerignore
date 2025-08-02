@@ -1,0 +1,8 @@
+# Ignore app_version file
+app_version
+
+# (Optional) other files you might not want copied
+.git
+.gitignore
+README.md
+*.md
