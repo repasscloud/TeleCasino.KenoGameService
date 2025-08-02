@@ -28,6 +28,15 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '[4,8,17,19,11,13,42,35]'
 
+      - name: Test video availability
+        run: |
+          ID=$(curl -s -X POST \
+            'http://localhost:8080/api/Keno/play?wager=1&gameSessionId=22' \
+            -H 'accept: application/json' \
+            -H 'Content-Type: application/json' \
+            -d '[4,8,17,19,11,13,42,35]' | jq -r '.id') && \
+          curl -s -o /dev/null -w "%{http_code}\n" "http://localhost:8080/${ID}.mp4"
+
       - name: Show folder tree
         run: |
           docker exec keno tree /shared/Keno
