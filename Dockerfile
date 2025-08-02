@@ -35,6 +35,9 @@ RUN apt update && apt -y install --no-install-recommends \
 
 COPY --from=build /app/publish .
 
+RUN mkdir -p /shared/Keno/images
+COPY Assets/KenoImages/* /shared/Keno/images/
+
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 ENV DOTNET_EnableDiagnostics=0
 ENV ASPNETCORE_URLS=http://+:8080
