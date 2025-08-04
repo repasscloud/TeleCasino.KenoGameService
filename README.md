@@ -1,9 +1,11 @@
 # TeleCasino Keno Game
 
+[![🧪 Test API in Docker](https://github.com/repasscloud/TeleCasino.KenoGameService/actions/workflows/test-api.yml/badge.svg)](https://github.com/repasscloud/TeleCasino.KenoGameService/actions/workflows/test-api.yml)
+[![🚀 Publish Docker Container (linux-x64)](https://github.com/repasscloud/TeleCasino.KenoGameService/actions/workflows/docker-image.yml/badge.svg)](https://github.com/repasscloud/TeleCasino.KenoGameService/actions/workflows/docker-image.yml)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/repasscloud/TeleCasino.KenoGameService?label=version)
+
 A command-line Keno game animation and result generator built with .NET.  
 Users pick 7–15 numbers (1–80), place a wager ($1, $2, or $5), and receive an animated video of the draw, plus a JSON summary.
-
----
 
 ## Features
 
@@ -14,8 +16,6 @@ Users pick 7–15 numbers (1–80), place a wager ($1, $2, or $5), and receive a
   4. **Summary grid** (5×4) of all drawn balls on black, with white circles around the player’s picks  
 - **JSON output**: Detailed result including wager, picks, drawn numbers, hits, payout, net gain, video file.  
 - **House edge**: Pays 95% of the fair odds.
-
----
 
 ## Installation
 
@@ -31,8 +31,6 @@ Users pick 7–15 numbers (1–80), place a wager ($1, $2, or $5), and receive a
 
 4. Place your `ball1.svg` … `ball80.svg` files in the `images/` directory.
 
----
-
 ## Build & Publish
 
 ```bash
@@ -45,8 +43,6 @@ dotnet publish -c Release
 # The single-file, self-contained binary will be in:
 #   bin/Release/net9.0/<RID>/publish/TeleCasino.KenoGame
 ```
-
----
 
 ## Usage
 
@@ -80,16 +76,12 @@ TeleCasino.KenoGame abc123 5 --bet 8,4,16,10,22,7 --json
 }
 ```
 
----
-
 ## Rules & Parameters
 
 - **Pick count**: 7–15 numbers out of 80.  
 - **Draw count**: 20 balls.  
 - **Minimum hits for payout**: 4 hits (otherwise payout = 0).  
 - **House edge**: 5% (pays 95% of fair odds).  
-
----
 
 ## Payout Formula
 
@@ -122,8 +114,6 @@ Let:
    \quad
    \text{NetGain} = \text{Payout} \;-\; \text{Wager}
    $$
-
----
 
 ## License
 
