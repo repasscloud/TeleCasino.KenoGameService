@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Cryptography;
 using NanoidDotNet;
 using SkiaSharp;
 using Svg.Skia;
@@ -13,7 +14,6 @@ public class KenoGameService : IKenoGameService
     private readonly string _htmlDir;
     private const int Width = 600;
     private const int Height = 600;
-    private static readonly Random Rand = new();
     private static readonly string _framesSubDir = "frames";
     private static readonly string _videosSubDir = "videos";
     private static readonly string _imagesSubDir = "images";
@@ -88,7 +88,8 @@ public class KenoGameService : IKenoGameService
             int frame = 0;
 
             // phase 1: flash only the 20 drawn balls in random order (dark gray)
-            foreach (var b in drawn.OrderBy(_ => Rand.Next()))
+            var flashOrder = drawn.OrderBy(_ => GetSecureRandomInt(0, int.MaxValue)).ToList();
+            foreach (var b in flashOrder)
                 DrawFrame(svgs, b, frame++, framesDir, SKColors.DimGray);
 
             // phase 2: reveal those 20 on forest green
@@ -185,9 +186,19 @@ public class KenoGameService : IKenoGameService
 
     private static void Shuffle<T>(IList<T> list)
     {
+        using var rng = RandomNumberGenerator.Create();
+        var buffer = new byte[4];
+
         for (int i = list.Count - 1; i > 0; i--)
         {
-            int j = Rand.Next(i + 1);
+            int j;
+            do
+            {
+                rng.GetBytes(buffer);
+                j = BitConverter.ToInt32(buffer, 0) & int.MaxValue;
+                j %= (i + 1);
+            } while (j < 0);
+
             (list[i], list[j]) = (list[j], list[i]);
         }
     }
@@ -221,7 +232,7 @@ public class KenoGameService : IKenoGameService
         Dictionary<int, SKSvg> svgs,
         int[] drawnBalls,
         int[] playerNumbers,
-        int    idx,
+        int idx,
         string dir)
     {
         const int cols = 5, rows = 4;
@@ -229,23 +240,23 @@ public class KenoGameService : IKenoGameService
         using var cnv = new SKCanvas(bmp);
         cnv.Clear(SKColors.Black);
 
-        float cellW   = Width  / (float)cols;
-        float cellH   = Height / (float)rows;
+        float cellW = Width / (float)cols;
+        float cellH = Height / (float)rows;
         float maxIcon = Math.Min(cellW, cellH) * 0.8f;
 
         var circlePaint = new SKPaint
         {
-            Style       = SKPaintStyle.Stroke,
+            Style = SKPaintStyle.Stroke,
             StrokeWidth = 4,
-            Color       = SKColors.White,
+            Color = SKColors.White,
             IsAntialias = true
         };
 
         for (int i = 0; i < drawnBalls.Length; i++)
         {
             int ball = drawnBalls[i];
-            var pic   = svgs[ball].Picture!;
-            var r     = pic.CullRect;
+            var pic = svgs[ball].Picture!;
+            var r = pic.CullRect;
             float scale = Math.Min(maxIcon / r.Width, maxIcon / r.Height);
 
             int col = i % cols, row = i / cols;
@@ -271,4 +282,22 @@ public class KenoGameService : IKenoGameService
                                 .Encode(SKEncodedImageFormat.Png, 90);
         File.WriteAllBytes(outPath, data.ToArray());
     }
+    
+    private static int GetSecureRandomInt(int min, int max)
+    {
+        if (min >= max) throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than min");
+        var diff = (long)max - min;
+        var buffer = new byte[4];
+
+        using var rng = RandomNumberGenerator.Create();
+        while (true)
+        {
+            rng.GetBytes(buffer);
+            var rand = BitConverter.ToUInt32(buffer, 0);
+            var maxFullRange = (1UL << 32) / (ulong)diff * (ulong)diff;
+            if (rand < maxFullRange)
+                return (int)(min + (rand % diff));
+        }
+    }
+
 }
